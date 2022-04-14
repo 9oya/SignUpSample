@@ -92,14 +92,25 @@ class SignUpViewController2: UIViewController {
         
         bottomBtn.rx.tap
             .bind { [weak self] _ in
-                self?.view.endEditing(true)
+                guard let `self` = self else { return }
+                
             }
             .disposed(by: disposeBag)
         
         phoneNumContainer.textField.rx
-            .controlEvent([.editingDidEndOnExit])
+            .text
+            .compactMap { $0 }
+            .observe(on: MainScheduler.asyncInstance)
             .bind { text in
-                print(text)
+                if text.count >= 11 {
+                    self.phoneNumContainer.textField.resignFirstResponder()
+                    
+                    UIView.transition(with: self.socialNumContainer, duration: 0.5) {
+                        self.socialNumContainer.isHidden = false
+                    }
+                    
+                    self.socialNumContainer.textField.becomeFirstResponder()
+                }
             }
             .disposed(by: disposeBag)
         
@@ -155,9 +166,9 @@ class SignUpViewController2: UIViewController {
         }()
         bottomBtn = {
             let btn = UIButton(type: .roundedRect)
-            btn.isHidden = false
             btn.backgroundColor = .systemBlue
             btn.layer.cornerRadius = 8.0
+            btn.isHidden = true
             
             btn.setTitle("다음", for: .normal)
             btn.setTitleColor(.white, for: .normal)
@@ -168,21 +179,26 @@ class SignUpViewController2: UIViewController {
         nameContainer = {
             let container = CustomTxtFieldContainer()
             container.guideLabel.text = "Name"
+            container.isHidden = true
             return container
         }()
         carrierContainer = {
             let container = CustomTxtFieldContainer()
             container.guideLabel.text = "Carrier"
+            container.isHidden = true
             return container
         }()
         socialNumContainer = {
             let container = CustomTxtFieldContainer()
             container.guideLabel.text = "Social"
+            container.isHidden = true
+            container.textField.keyboardType = .numberPad
             return container
         }()
         phoneNumContainer = {
             let container = CustomTxtFieldContainer()
             container.guideLabel.text = "Phone"
+            container.textField.keyboardType = .numberPad
             return container
         }()
         
