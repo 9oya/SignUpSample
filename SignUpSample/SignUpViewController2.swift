@@ -141,6 +141,14 @@ class SignUpViewController2: UIViewController {
                 UIView.animate(withDuration: 0.5) {
                     self.nameContainer.alpha = 1.0
                 }
+                
+                UIView.animate(withDuration: 0.5) {
+                    self.bottomBtn.snp.updateConstraints {
+                        $0.left.right.equalToSuperview().inset(0)
+                        $0.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top).offset(-0)
+                    }
+                    self.bottomBtn.layer.cornerRadius = 0.0
+                }
             })
             .compactMap { $0 }
             .distinctUntilChanged()
